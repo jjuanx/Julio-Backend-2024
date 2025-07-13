@@ -1,4 +1,4 @@
-//import dotenv from 'dotenv'
+// import dotenv from 'dotenv'
 
 import { getApp, shutdownApp } from './utils/testApp'
 import { getLoggedInCustomer, getLoggedInOwner, getNewLoggedInOwner } from './utils/auth'
@@ -10,7 +10,7 @@ import request from 'supertest'
 
 let totalScore = 0 // Variable global para mantener la puntuación
 
-const testWeights = {  
+const testWeights = {
   'Get restaurant details, then performances Should return 200 if restaurant exists': 0.25,
   'Get restaurant details, then performances This endpoint should return only one performance in the following six days for tested restaurant': 0.75,
   'Get restaurant details, then performances All performances must have an id': 0.25,
@@ -20,7 +20,7 @@ const testWeights = {
   'Get owner restaurants There must be performances, although being zero-length (in /users/myRestaurants endpoint)': 0.75,
   'Create performance Should return 401 if not logged in': 0.25,
   'Create performance Should return 403 when logged in as a customer': 0.25,
-  'Create performance Should return 403 when logged in as another owner': 0.25, 
+  'Create performance Should return 403 when logged in as another owner': 0.25,
   'Create performance Should return 422 when invalid performance date': 0.5,
   'Create performance Should return 200 when valid performance': 0.5
 }
@@ -38,7 +38,7 @@ afterEach(() => {
 
 // Imprime la puntuación total después de todas las pruebas
 afterAll(() => {
-  console.info(`Total Score: ${totalScore}`) 
+  console.info(`Total Score: ${totalScore}`)
 })
 
 describe('Get restaurant details, then performances', () => {
@@ -50,7 +50,7 @@ describe('Get restaurant details, then performances', () => {
   })
   it('Should return 200 if restaurant exists', async () => {
     const response = (await request(app).get(`/restaurants/${restaurant.id}`).send())
-    performances = response.body.performances 
+    performances = response.body.performances
     expect(response.status).toBe(200)
     expect(performances !== undefined).toBe(true)
   })
@@ -107,14 +107,14 @@ describe('Create performance', () => {
   let owner, app, customer, restaurant, validPerformance, invalidPerformance
   beforeAll(async () => {
     app = await getApp()
-    
+
     owner = await getLoggedInOwner()
-    
+
     customer = await getLoggedInCustomer()
-    restaurant = await getFirstRestaurantOfOwner(owner)      
+    restaurant = await getFirstRestaurantOfOwner(owner)
 
     const validAppointment = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000)
-    validAppointment.setHours(0,0,0,0)
+    validAppointment.setHours(0, 0, 0, 0)
     validPerformance = {
       group: 'Bob Dylan',
       appointment: validAppointment,
@@ -122,12 +122,12 @@ describe('Create performance', () => {
     }
 
     const invalidAppointment = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    invalidAppointment.setHours(0,0,0,0)
+    invalidAppointment.setHours(0, 0, 0, 0)
     invalidPerformance = {
       group: 'Bob Dylan',
       appointment: invalidAppointment,
       restaurantId: restaurant.id
-    }            
+    }
   })
   it('Should return 401 if not logged in', async () => {
     const response = await request(app).post('/performances').send(validPerformance)
@@ -154,4 +154,3 @@ describe('Create performance', () => {
     await shutdownApp()
   })
 })
-  
